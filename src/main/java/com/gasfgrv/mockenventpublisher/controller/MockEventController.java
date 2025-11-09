@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.io.IOException;
 
 @RestController
-@RequestMapping("/mock-envent")
+@RequestMapping("/mock-event")
 public class MockEventController {
 
     private final SendEventUsecase usecase;
