@@ -31,22 +31,24 @@ public class AvroSchemaValidator implements Validator {
     @Override
     public void validate(KafkaEventDTO dto) {
         try {
-            Schema schema = getSchema(dto);
-            Decoder decoder = DecoderFactory.get().jsonDecoder(schema, toJsonString(dto.message()));
+            SchemaMetadata schemaMetadata = client.getLatestSchemaMetadata(dto.topic().concat("-value"));
+            Schema.Parser parser = new Schema.Parser();
+            Schema schema = parser.parse(schemaMetadata.getSchema());
+            DecoderFactory decoderFactory = DecoderFactory.get();
+            Decoder decoder = decoderFactory.jsonDecoder(schema, toJsonString(dto.message()));
             DatumReader<GenericData.Record> reader = new GenericDatumReader<>(schema);
             reader.read(null, decoder);
         } catch (IOException | RestClientException e) {
-            throw new IllegalArgumentException("Mensagem inválida para o schema Avro do tópico " + dto.topic() + ": " + e.getMessage(), e);
+            throw new IllegalArgumentException("Message does not conform to Avro schema: " + e.getMessage(), e);
         }
     }
 
-    private String toJsonString(Map<String, Object> message) throws JsonProcessingException {
-        return mapper.writeValueAsString(message);
-    }
-
-    private Schema getSchema(KafkaEventDTO dto) throws IOException, RestClientException {
-        SchemaMetadata schemaMetadata = client.getLatestSchemaMetadata(dto.topic().concat("-value"));
-        return new Schema.Parser().parse(schemaMetadata.getSchema());
+    private String toJsonString(Map<String, Object> message) {
+        try {
+            return mapper.writeValueAsString(message);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException("Error converting message to JSON string", e);
+        }
     }
 
 }
