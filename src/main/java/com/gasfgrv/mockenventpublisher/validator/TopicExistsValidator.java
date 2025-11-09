@@ -3,6 +3,7 @@ package com.gasfgrv.mockenventpublisher.validator;
 import com.gasfgrv.mockenventpublisher.controller.dto.KafkaEventDTO;
 import org.apache.kafka.clients.admin.AdminClient;
 import org.apache.kafka.clients.admin.ListTopicsResult;
+import org.apache.kafka.common.KafkaFuture;
 import org.springframework.kafka.core.KafkaAdmin;
 import org.springframework.stereotype.Component;
 
@@ -22,12 +23,17 @@ public class TopicExistsValidator implements Validator {
     public void validate(KafkaEventDTO dto) {
         try (AdminClient adminClient = AdminClient.create(kafkaAdmin.getConfigurationProperties())) {
             ListTopicsResult topics = adminClient.listTopics();
-            Set<String> names = topics.names().get();
-            if (!names.contains(dto.topic())) {
-                throw new IllegalArgumentException("Tópico Kafka inexistente: " + dto.topic());
-            }
+            KafkaFuture<Set<String>> future = topics.names();
+            Set<String> names = future.get();
+            checkTopic(dto.topic(), names);
         } catch (InterruptedException | ExecutionException e) {
-            throw new RuntimeException("Erro ao verificar tópico Kafka", e);
+            throw new RuntimeException("Error while checking Kafka topics: " + e.getMessage(), e);
+        }
+    }
+
+    private void checkTopic(String topic, Set<String> names) {
+        if (!names.contains(topic)) {
+            throw new IllegalArgumentException("Topic " + topic + " does not exist in the Kafka cluster.");
         }
     }
 
