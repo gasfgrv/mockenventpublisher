@@ -48,7 +48,6 @@ class SendEventUsecaseTest {
         this.usecase = new SendEventUsecase(validatorSet, producer);
     }
 
-    // todo: testar cenário feliz
     @Test
     @DisplayName("Should send event successfully when all validators pass")
     void shouldSendEventSuccessfullyWhenAllValidatorsPass() {
