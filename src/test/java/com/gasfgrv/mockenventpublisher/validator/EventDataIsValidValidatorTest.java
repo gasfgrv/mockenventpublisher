@@ -1,6 +1,8 @@
 package com.gasfgrv.mockenventpublisher.validator;
 
-import com.gasfgrv.mockenventpublisher.controller.dto.KafkaEventDTO;
+import com.gasfgrv.mockenventpublisher.domain.validator.EventDataIsValidValidator;
+import com.gasfgrv.mockenventpublisher.domain.validator.Validator;
+import com.gasfgrv.mockenventpublisher.infrastructure.dto.KafkaEventDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

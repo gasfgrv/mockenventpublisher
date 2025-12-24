@@ -1,10 +1,11 @@
 package com.gasfgrv.mockenventpublisher.usecase;
 
-import com.gasfgrv.mockenventpublisher.controller.dto.KafkaEventDTO;
-import com.gasfgrv.mockenventpublisher.publisher.KafkaEventProducer;
-import com.gasfgrv.mockenventpublisher.validator.EventDataIsValidValidator;
-import com.gasfgrv.mockenventpublisher.validator.TopicExistsValidator;
-import com.gasfgrv.mockenventpublisher.validator.Validator;
+import com.gasfgrv.mockenventpublisher.application.usecase.SendEventUsecase;
+import com.gasfgrv.mockenventpublisher.infrastructure.dto.KafkaEventDTO;
+import com.gasfgrv.mockenventpublisher.infrastructure.publisher.KafkaEventProducer;
+import com.gasfgrv.mockenventpublisher.domain.validator.EventDataIsValidValidator;
+import com.gasfgrv.mockenventpublisher.domain.validator.TopicExistsValidator;
+import com.gasfgrv.mockenventpublisher.domain.validator.Validator;
 import org.apache.avro.specific.SpecificRecord;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

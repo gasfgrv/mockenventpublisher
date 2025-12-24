@@ -1,18 +1,20 @@
-package com.gasfgrv.mockenventpublisher.controller;
+package com.gasfgrv.mockenventpublisher.infrastructure.controller;
 
-import com.gasfgrv.mockenventpublisher.controller.dto.KafkaEventDTO;
-import com.gasfgrv.mockenventpublisher.usecase.SendEventUsecase;
+import com.gasfgrv.mockenventpublisher.infrastructure.dto.KafkaEventDTO;
+import com.gasfgrv.mockenventpublisher.application.usecase.SendEventUsecase;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.io.IOException;
-
 @RestController
 @RequestMapping("/mock-event")
 public class MockEventController {
+
+    private static final Logger log = LoggerFactory.getLogger(MockEventController.class);
 
     private final SendEventUsecase usecase;
 
@@ -21,8 +23,9 @@ public class MockEventController {
     }
 
     @PostMapping
-    public ResponseEntity<String> publishMockEnvent(@RequestBody KafkaEventDTO dto) throws IOException, ClassNotFoundException {
-        String response = usecase.execute(dto);
+    public ResponseEntity<String> publishMockEvent(@RequestBody KafkaEventDTO dto) {
+        log.info("Received request to publish mock event: {}", dto);
+        var response = usecase.execute(dto);
         return ResponseEntity.ok(response);
     }
 

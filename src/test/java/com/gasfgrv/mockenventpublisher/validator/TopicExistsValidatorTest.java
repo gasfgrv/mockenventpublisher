@@ -1,6 +1,7 @@
 package com.gasfgrv.mockenventpublisher.validator;
 
-import com.gasfgrv.mockenventpublisher.controller.dto.KafkaEventDTO;
+import com.gasfgrv.mockenventpublisher.domain.validator.TopicExistsValidator;
+import com.gasfgrv.mockenventpublisher.infrastructure.dto.KafkaEventDTO;
 import org.apache.kafka.clients.admin.AdminClient;
 import org.apache.kafka.clients.admin.ListTopicsResult;
 import org.apache.kafka.common.KafkaFuture;
