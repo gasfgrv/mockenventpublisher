@@ -25,6 +25,14 @@ services:
       KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
 
+  kafka-init:
+    image: confluentinc/cp-kafka:7.5.0
+    container_name: kafka-init_spring
+    depends_on:
+      - kafka
+    command: >
+      bash -c "kafka-topics --bootstrap-server kafka:29092 --create --if-not-exists --topic usuarios --replication-factor 1 --partitions 1" 
+
   schema-registry:
     image: confluentinc/cp-schema-registry:7.5.0
     hostname: schema-registry
