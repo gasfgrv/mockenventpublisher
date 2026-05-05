@@ -1,7 +1,10 @@
 package com.gasfgrv.mockenventpublisher.infrastructure.controller;
 
-import com.gasfgrv.mockenventpublisher.infrastructure.dto.KafkaEventDTO;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gasfgrv.mockenventpublisher.application.usecase.SendEventUsecase;
+import com.gasfgrv.mockenventpublisher.infrastructure.dto.KafkaEventDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
@@ -10,6 +13,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Map;
+
 @RestController
 @RequestMapping("/mock-event")
 public class MockEventController {
@@ -17,16 +22,19 @@ public class MockEventController {
     private static final Logger log = LoggerFactory.getLogger(MockEventController.class);
 
     private final SendEventUsecase usecase;
+    private final ObjectMapper mapper;
 
-    public MockEventController(SendEventUsecase usecase) {
+    public MockEventController(SendEventUsecase usecase, ObjectMapper mapper) {
         this.usecase = usecase;
+        this.mapper = mapper;
     }
 
     @PostMapping
-    public ResponseEntity<String> publishMockEvent(@RequestBody KafkaEventDTO dto) {
+    public ResponseEntity<Map<String, Object>> publishMockEvent(@RequestBody KafkaEventDTO dto) throws JsonProcessingException {
         log.info("Received request to publish mock event: {}", dto);
         var response = usecase.execute(dto);
-        return ResponseEntity.ok(response);
+        var responseMap = mapper.<Map<String, Object>>readValue(response, new TypeReference<>() {});
+        return ResponseEntity.ok(responseMap);
     }
 
 }
