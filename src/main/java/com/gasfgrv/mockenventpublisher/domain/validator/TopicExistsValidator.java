@@ -25,9 +25,7 @@ public class TopicExistsValidator implements Validator {
     public void validate(KafkaEventDTO dto) {
         log.info("Validating existence of topic: {}", dto.topic());
         try (var adminClient = AdminClient.create(kafkaAdmin.getConfigurationProperties())) {
-            var topics = adminClient.listTopics();
-            var future = topics.names();
-            var names = future.get();
+            var names = adminClient.listTopics().names().get();
             checkTopic(dto.topic(), names);
         } catch (InterruptedException | ExecutionException e) {
             log.error("Error while checking Kafka topics", e);
