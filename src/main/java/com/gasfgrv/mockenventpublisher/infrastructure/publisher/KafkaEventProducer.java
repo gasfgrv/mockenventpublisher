@@ -11,6 +11,9 @@ import org.springframework.kafka.support.SendResult;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.time.LocalDateTime;
 
 @Component
 public class KafkaEventProducer {
@@ -33,12 +36,28 @@ public class KafkaEventProducer {
             var message = mapper.readValue(messageJson, schemaClass.<SpecificRecord>asSubclass(SpecificRecord.class));
 
             log.info("Sending message to topic: {}", dto.topic());
-            var producerRecord = new ProducerRecord<String, SpecificRecord>(dto.topic(), message);
+            var key = generateKey(dto);
+            var producerRecord = new ProducerRecord<>(dto.topic(), key, message);
+            producerRecord.headers().add("created_at", LocalDateTime.now().toString().getBytes());
             var send = kafkaTemplate.send(producerRecord);
             var join = send.whenComplete(this::printSendStatus).join();
             return join.getProducerRecord().value();
         } catch (ClassNotFoundException | IOException e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    private String generateKey(KafkaEventDTO dto) {
+        try {
+            byte[] bytes = dto.toString().getBytes();
+            MessageDigest md5 = MessageDigest.getInstance("MD5");
+            StringBuilder stringBuilder = new StringBuilder();
+            for (byte b : md5.digest(bytes)) {
+                stringBuilder.append(String.format("%02x", b));
+            }
+            return stringBuilder.toString();
+        } catch (NoSuchAlgorithmException e) {
+            throw new IllegalArgumentException(e);
         }
     }
 
