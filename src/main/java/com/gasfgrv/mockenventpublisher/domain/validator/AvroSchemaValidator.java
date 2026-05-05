@@ -33,10 +33,8 @@ public class AvroSchemaValidator implements Validator {
         log.info("Validating message against Avro schema for topic: {}", dto.topic());
         try {
             var schemaMetadata = client.getLatestSchemaMetadata(dto.topic().concat("-value"));
-            var parser = new Schema.Parser();
-            var schema = parser.parse(schemaMetadata.getSchema());
-            var decoderFactory = DecoderFactory.get();
-            var decoder = decoderFactory.jsonDecoder(schema, toJsonString(dto.message()));
+            var schema = new Schema.Parser().parse(schemaMetadata.getSchema());
+            var decoder = DecoderFactory.get().jsonDecoder(schema, toJsonString(dto.message()));
             var reader = new GenericDatumReader<>(schema);
             reader.read(null, decoder);
         } catch (IOException | RestClientException e) {
