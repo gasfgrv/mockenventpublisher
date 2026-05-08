@@ -43,6 +43,7 @@ public class KafkaEventProducer {
             var join = send.whenComplete(this::printSendStatus).join();
             return join.getProducerRecord().value();
         } catch (ClassNotFoundException | IOException e) {
+            log.error("Error processing message for topic {}: {}", dto.topic(), e.getMessage());
             throw new RuntimeException(e);
         }
     }
